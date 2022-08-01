@@ -3,7 +3,10 @@ package com.plcoding.jetpackcomposepokedex.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val LightBlue = Color(0xFFBAC7FF)
-val lightGrey = Color(0xFFAAAAAA)
+val LightGrey = Color(0xFFAAAAAA)
+val LightPink = Color(0xFFFFCDD2)
+val LightGreen = Color(0xFFC8E6C9)
+val LightRed = Color(0xFFFF8888)
 
 val HPColor = Color(0xFFF5FF00)
 val AtkColor = Color(1f, 0f, 0f, 0.66f)
