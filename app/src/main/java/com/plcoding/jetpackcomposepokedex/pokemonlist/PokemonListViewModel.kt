@@ -19,7 +19,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
 import com.plcoding.jetpackcomposepokedex.data.models.PokedexListEntry
+import com.plcoding.jetpackcomposepokedex.data.remote.responses.Pokemon
 import com.plcoding.jetpackcomposepokedex.repository.PokemonRepository
+import com.plcoding.jetpackcomposepokedex.ui.theme.*
 import com.plcoding.jetpackcomposepokedex.util.Constants.PAGE_SIZE
 import com.plcoding.jetpackcomposepokedex.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,6 +48,10 @@ class PokemonListViewModel @Inject constructor(
 
     init {
         loadPokemonPaginated()
+    }
+
+    suspend fun getPokemonInfo(pokemonName: String): Resource<Pokemon> {
+        return repository.getPokemonInfo(pokemonName)
     }
 
     fun searchPokemonList(query: String) {
@@ -111,6 +117,30 @@ class PokemonListViewModel @Inject constructor(
             palette?.dominantSwatch?.rgb?.let { colorValue ->
                 onFinish(Color(colorValue))
             }
+        }
+    }
+
+    fun parseTypeColor(type: Pokemon.Type): Color {
+        return when(type.type.name.toLowerCase(java.util.Locale.ROOT)) {
+            "normal" -> TypeNormal
+            "fire" -> TypeFire
+            "water" -> TypeWater
+            "electric" -> TypeElectric
+            "grass" -> TypeGrass
+            "ice" -> TypeIce
+            "fighting" -> TypeFighting
+            "poison" -> TypePoison
+            "ground" -> TypeGround
+            "flying" -> TypeFlying
+            "psychic" -> TypePsychic
+            "bug" -> TypeBug
+            "rock" -> TypeRock
+            "ghost" -> TypeGhost
+            "dragon" -> TypeDragon
+            "dark" -> TypeDark
+            "steel" -> TypeSteel
+            "fairy" -> TypeFairy
+            else -> Color.Black
         }
     }
 }

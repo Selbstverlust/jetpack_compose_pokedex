@@ -1,8 +1,11 @@
 package com.plcoding.jetpackcomposepokedex.pokemonlist
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -24,7 +27,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,6 +39,13 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.plcoding.jetpackcomposepokedex.R
 import com.plcoding.jetpackcomposepokedex.data.models.PokedexListEntry
+import com.plcoding.jetpackcomposepokedex.data.remote.responses.Pokemon
+import com.plcoding.jetpackcomposepokedex.ui.theme.pressStart2P
+import com.plcoding.jetpackcomposepokedex.util.Resource
+import com.plcoding.jetpackcomposepokedex.util.parseStatToAbbr
+import com.plcoding.jetpackcomposepokedex.util.parseStatToColor
+import com.plcoding.jetpackcomposepokedex.util.parseTypeToColor
+import java.util.*
 
 @Composable
 fun PokemonListScreen(
@@ -55,11 +68,10 @@ fun PokemonListScreen(
                         hint = "Search...",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
                     ) {
                         viewModel.searchPokemonList(it)
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
                     PokemonList(navController = navController)
                 }
     }
@@ -77,32 +89,34 @@ fun SearchBar(
     var isHintDisplayed by remember {
         mutableStateOf(hint != "")
     }
-    Box(modifier = modifier) {
-        BasicTextField(
-            value = text,
-            onValueChange = {
-                text = it
-                onSearch(it)
-            },
-            maxLines = 1,
-            singleLine = true,
-            textStyle = TextStyle(color = Color.Black),
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(5.dp, CircleShape)
-                .background(Color.White, CircleShape)
-                .padding(horizontal = 20.dp, vertical = 12.dp)
-                .onFocusChanged {
-                    isHintDisplayed = it.isFocused != true && text.isEmpty()
-                }
-        )
-        if(isHintDisplayed) {
-            Text(
-                text = hint,
-                color = Color.LightGray,
+    Row {
+        Box(modifier = modifier) {
+            BasicTextField(
+                value = text,
+                onValueChange = {
+                    text = it
+                    onSearch(it)
+                },
+                maxLines = 1,
+                singleLine = true,
+                textStyle = TextStyle(color = Color.Black),
                 modifier = Modifier
+                    .fillMaxWidth()
+                    .shadow(5.dp, CircleShape)
+                    .background(Color.White, CircleShape)
                     .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .onFocusChanged {
+                        isHintDisplayed = it.isFocused != true && text.isEmpty()
+                    }
             )
+            if (isHintDisplayed) {
+                Text(
+                    text = hint,
+                    color = Color.LightGray,
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp, vertical = 12.dp)
+                )
+            }
         }
     }
 }
@@ -118,7 +132,7 @@ fun PokemonList(
     val isLoading by remember { viewModel.isLoading }
     val isSearching by remember { viewModel.isSearching }
 
-    LazyColumn(contentPadding = PaddingValues(16.dp)) {
+    LazyColumn(contentPadding = PaddingValues(0.dp), modifier = Modifier.padding(horizontal = 16.dp)) {
         val itemCount = if(pokemonList.size % 2 == 0) {
             pokemonList.size / 2
         } else {
@@ -157,7 +171,7 @@ fun PokedexEntry(
     viewModel: PokemonListViewModel = hiltViewModel()
 ) {
     val defaultDominantColor = MaterialTheme.colors.surface
-    var dominantColor by  remember {
+    var dominantColor by remember {
         mutableStateOf(defaultDominantColor)
     }
 
@@ -207,9 +221,10 @@ fun PokedexEntry(
             )
             Text(
                 text = entry.pokemonName,
-                fontSize = 20.sp,
+                fontSize = 10.sp,
+                fontFamily = pressStart2P,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             )
         }
     }
