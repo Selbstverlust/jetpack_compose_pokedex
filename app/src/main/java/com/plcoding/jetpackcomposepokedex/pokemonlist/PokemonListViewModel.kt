@@ -41,6 +41,7 @@ class PokemonListViewModel @Inject constructor(
     var loadError = mutableStateOf("")
     var isLoading = mutableStateOf(false)
     var endReached = mutableStateOf(false)
+    var isSearchEnabled = mutableStateOf(false)
 
     private var cachedPokemonList = listOf<PokedexListEntry>()
     private var isSearchStarting = true

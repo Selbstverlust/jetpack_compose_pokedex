@@ -1,19 +1,20 @@
 package com.plcoding.jetpackcomposepokedex.pokemonlist
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -27,10 +28,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -39,13 +37,7 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.plcoding.jetpackcomposepokedex.R
 import com.plcoding.jetpackcomposepokedex.data.models.PokedexListEntry
-import com.plcoding.jetpackcomposepokedex.data.remote.responses.Pokemon
 import com.plcoding.jetpackcomposepokedex.ui.theme.pressStart2P
-import com.plcoding.jetpackcomposepokedex.util.Resource
-import com.plcoding.jetpackcomposepokedex.util.parseStatToAbbr
-import com.plcoding.jetpackcomposepokedex.util.parseStatToColor
-import com.plcoding.jetpackcomposepokedex.util.parseTypeToColor
-import java.util.*
 
 @Composable
 fun PokemonListScreen(
@@ -63,17 +55,34 @@ fun PokemonListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .align(CenterHorizontally)
+                            .padding(bottom = 20.dp)
                         )
-                    SearchBar(
-                        hint = "Search...",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
-                    ) {
-                        viewModel.searchPokemonList(it)
+                    if (viewModel.isSearchEnabled.value){
+                        SearchBar(
+                            hint = "Search...",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                        ) {
+                            viewModel.searchPokemonList(it)
+                        }
                     }
                     PokemonList(navController = navController)
                 }
+    }
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        FloatingActionButton(
+            onClick = {
+                viewModel.isSearchEnabled.value = viewModel.isSearchEnabled.value != true
+            },
+            Modifier
+                .align(BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(Icons.Default.Search, contentDescription = null)
+        }
     }
 }
 
@@ -224,7 +233,9 @@ fun PokedexEntry(
                 fontSize = 10.sp,
                 fontFamily = pressStart2P,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
             )
         }
     }
