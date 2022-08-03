@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/mateusmartins/AndroidStudioProjects/JetpackComposePokedex/app/src/main/res/drawable/ic_egg.xml" value="0.1" />
+        <entry key="..\:/Users/mateusmartins/AndroidStudioProjects/JetpackComposePokedex/app/src/main/res/drawable/ic_height.xml" value="0.1" />
+        <entry key="..\:/Users/mateusmartins/AndroidStudioProjects/JetpackComposePokedex/app/src/main/res/drawable/ic_weight.xml" value="0.1" />
         <entry key="..\:/Users/mateusmartins/AndroidStudioProjects/JetpackComposePokedex/app/src/main/res/font/pressstart2p_regular.xml" value="0.17592592592592593" />
       </map>
     </option>
