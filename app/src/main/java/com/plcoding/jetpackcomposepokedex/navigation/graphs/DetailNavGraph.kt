@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -203,7 +204,7 @@ fun PokemonAbilityDetail(
     if (abilityName != null) {
         val abilityInfo =
             produceState<Resource<PokemonAbility>>(initialValue = Resource.Loading()) {
-                value = viewModel.getPokemonAbilityInfo(abilityName)
+                value = viewModel.getPokemonAbilityInfo(abilityName.toLowerCase())
             }.value
 
         if (abilityInfo is Resource.Success){
