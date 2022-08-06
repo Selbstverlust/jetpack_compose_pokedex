@@ -1,19 +1,14 @@
 package com.plcoding.jetpackcomposepokedex.pokemondetail
 
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,19 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
@@ -44,11 +34,9 @@ import com.plcoding.jetpackcomposepokedex.R
 import com.plcoding.jetpackcomposepokedex.data.remote.responses.Pokemon
 import com.plcoding.jetpackcomposepokedex.data.remote.responses.PokemonAbility
 import com.plcoding.jetpackcomposepokedex.data.remote.responses.PokemonSpecies
-import com.plcoding.jetpackcomposepokedex.navigation.graphs.DetailNavGraph
 import com.plcoding.jetpackcomposepokedex.ui.theme.TypeNormal
 import com.plcoding.jetpackcomposepokedex.ui.theme.pressStart2P
 import com.plcoding.jetpackcomposepokedex.util.*
-import timber.log.Timber
 import java.util.*
 
 @Composable
@@ -84,7 +72,6 @@ fun PokemonDetailScreen(
                     selected = viewModel.detailSection.value == DetailSection.Stats,
                     onClick = {
                         viewModel.detailSection.value = DetailSection.Stats
-                        navController.navigate("detail_section_stats")
                     }
                 )
                 BottomNavigationItem(
@@ -93,7 +80,6 @@ fun PokemonDetailScreen(
                     selected = viewModel.detailSection.value == DetailSection.Abilities,
                     onClick = {
                         viewModel.detailSection.value = DetailSection.Abilities
-                        navController.navigate("detail_section_ability_list")
                     }
                 )
                 BottomNavigationItem(
@@ -261,15 +247,14 @@ fun PokemonDetailSection(
         PokemonDetailDataSection(pokemonWeight = pokemonInfo.weight,
             pokemonHeight = pokemonInfo.height,
             pokemonSpecies = pokemonSpecies)
-        DetailNavGraph(navController = navController, pokemonInfo = pokemonInfo)
 
-        /* when (viewModel.detailSection.value) {
+        when (viewModel.detailSection.value) {
             DetailSection.Stats -> PokemonBaseStats(pokemonInfo = pokemonInfo)
             DetailSection.Abilities -> PokemonAbilitiesList(pokemonInfo = pokemonInfo)
             DetailSection.AbilityDetail -> PokemonAbilityDetail()
             DetailSection.Moves -> PokemonBaseStats(pokemonInfo = pokemonInfo)
             DetailSection.MoveDetail -> PokemonBaseStats(pokemonInfo = pokemonInfo)
-        } */
+        }
     }
 }
 
@@ -397,5 +382,155 @@ fun PokemonDetailEggDataItem(
             text = name,
             color = MaterialTheme.colors.onSurface
         )
+    }
+}
+
+@Composable
+fun PokemonStat(
+    statName: String,
+    statValue: Int,
+    statMaxValue: Int,
+    statColor: Color,
+    height: Dp = 28.dp,
+    animDuration: Int = 1000,
+    animDelay: Int = 0,
+) {
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+    val curPercent = animateFloatAsState(
+        targetValue = if (animationPlayed) {
+            statValue / statMaxValue.toFloat()
+        } else 0f,
+        animationSpec = tween(
+            animDuration,
+            animDelay
+        )
+    )
+    LaunchedEffect(key1 = true) {
+        animationPlayed = true
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height)
+            .clip(CircleShape)
+            .background(
+                if (isSystemInDarkTheme()) {
+                    Color(0xFF505050)
+                } else {
+                    Color.LightGray
+                }
+            )
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(curPercent.value)
+                .clip(CircleShape)
+                .background(statColor)
+                .padding(horizontal = 8.dp)
+        ) {
+            Text(
+                text = statName,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = (curPercent.value * statMaxValue).toInt().toString(),
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun PokemonBaseStats(
+    pokemonInfo: Pokemon,
+    animDelayPerItem: Int = 100,
+) {
+    val maxBaseStat = remember {
+        pokemonInfo.stats.maxOf { it.baseStat }
+    }
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = "Base stats:",
+            fontSize = 20.sp,
+            color = MaterialTheme.colors.onSurface
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+
+        for (i in pokemonInfo.stats.indices) {
+            val stat = pokemonInfo.stats[i]
+            PokemonStat(
+                statName = parseStatToAbbr(stat),
+                statValue = stat.baseStat,
+                statMaxValue = maxBaseStat,
+                statColor = parseStatToColor(stat),
+                animDelay = i * animDelayPerItem
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+fun PokemonAbilitiesList(
+    pokemonInfo: Pokemon
+) {
+    val abilities = pokemonInfo.abilities
+
+    for (item in abilities) {
+        PokemonAbilityBox(name = item.ability.name.capitalize())
+    }
+}
+
+@Composable
+fun PokemonAbilityBox(
+    name: String,
+    viewModel: PokemonDetailViewModel = hiltViewModel(),
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .padding(8.dp)
+            .clip(CircleShape)
+            .background(TypeNormal)
+            .height(35.dp)
+            .width(150.dp)
+            .clickable {
+                viewModel.abilityName.value = name
+                viewModel.detailSection.value = DetailSection.AbilityDetail
+            }
+    ) {
+        Text(
+            text = name,
+            color = Color.White,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(4.dp)
+        )
+    }
+}
+
+@Composable
+fun PokemonAbilityDetail(
+    abilityName: String? = "stench",
+    viewModel: PokemonDetailViewModel = hiltViewModel()
+) {
+    if (abilityName != null) {
+        val abilityInfo =
+            produceState<Resource<PokemonAbility>>(initialValue = Resource.Loading()) {
+                value = viewModel.getPokemonAbilityInfo(abilityName.toLowerCase())
+            }.value
+
+        if (abilityInfo is Resource.Success){
+            Row {
+                PokemonAbilityBox(name = abilityInfo.data!!.name)
+                Text(text = abilityInfo.data.effectEntries[1].effect)
+            }
+        }
     }
 }

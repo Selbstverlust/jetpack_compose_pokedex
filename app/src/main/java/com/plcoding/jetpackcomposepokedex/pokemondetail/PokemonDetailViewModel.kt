@@ -1,11 +1,7 @@
 package com.plcoding.jetpackcomposepokedex.pokemondetail
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.compose.rememberNavController
 import com.plcoding.jetpackcomposepokedex.data.remote.responses.Pokemon
 import com.plcoding.jetpackcomposepokedex.data.remote.responses.PokemonAbility
 import com.plcoding.jetpackcomposepokedex.data.remote.responses.PokemonSpecies
@@ -13,7 +9,6 @@ import com.plcoding.jetpackcomposepokedex.repository.PokemonRepository
 import com.plcoding.jetpackcomposepokedex.util.DetailSection
 import com.plcoding.jetpackcomposepokedex.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
