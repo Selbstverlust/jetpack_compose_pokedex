@@ -5,4 +5,4 @@ object Constants {
     const val PAGE_SIZE = 1154
 }
 
-enum class DetailSection { Stats, Abilities, Moves }
+enum class DetailSection { Stats, Abilities, Moves, AbilityDetail, MoveDetail }

@@ -1,6 +1,7 @@
 package com.plcoding.jetpackcomposepokedex.data.remote
 
 import com.plcoding.jetpackcomposepokedex.data.remote.responses.Pokemon
+import com.plcoding.jetpackcomposepokedex.data.remote.responses.PokemonAbility
 import com.plcoding.jetpackcomposepokedex.data.remote.responses.PokemonList
 import com.plcoding.jetpackcomposepokedex.data.remote.responses.PokemonSpecies
 import retrofit2.http.GET
@@ -23,4 +24,9 @@ interface PokeApi {
     suspend fun getPokemonSpeciesInfo(
         @Path("name") name: String
     ): PokemonSpecies
+
+    @GET("ability/{name}")
+    suspend fun getPokemonAbilityInfo(
+        @Path("name") name: String
+    ): PokemonAbility
 }
